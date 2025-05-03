@@ -45,6 +45,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha
 
+      - name: GitHub-specific config
+        run: |
+          cd repo
+          echo "url: https://${{ github.repository_owner }}.github.io" >> _config.yaml
+          echo "baseurl: /operating-systems/${{ env.DEPLOYMENT_ID }}" >> _config.yaml
+
       - name: Load Image
         run: |
           mkdir -p ${{ env.DEPLOYMENT_ID }}
@@ -52,7 +58,7 @@ jobs:
           docker run -v $GITHUB_WORKSPACE/${{ env.DEPLOYMENT_ID }}:/usr/src/app/_site \
             -v $GITHUB_WORKSPACE/repo:/usr/src/app operating-systems-${{ env.DEPLOYMENT_ID }}:latest \
             bundle exec jekyll build
-
+          
       # Popular action to deploy to GitHub Pages:
       # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
       - name: Deploy to GitHub Pages

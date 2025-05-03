@@ -24,22 +24,30 @@ jobs:
           file: ./repo/Dockerfile
           push: false
           load: true
-          tags: operating-systems-oer/docusaurus:latest
+          tags: operating-systems-jekyll:latest
           cache-from: type=gha
           cache-to: type=gha
+
+      - name: GitHub-specific config
+        run: |
+          cd repo
+          echo "url: https://${{ github.repository_owner }}.github.io" >> _config.yaml
+          echo "baseurl: /operating-systems" >> _config.yaml
 
       - name: Load image
         run: |
           mkdir output
           docker image list
-          docker run -v $GITHUB_WORKSPACE/repo:/content -v $GITHUB_WORKSPACE/output:/output operating-systems-oer/docusaurus:latest
+          docker run -v $GITHUB_WORKSPACE/output:/usr/src/app/_site \
+            -v $GITHUB_WORKSPACE/repo:/usr/src/app operating-systems-jekyll:latest \
+            bundle exec jekyll build
 
       # Popular action to deploy to GitHub Pages:
       # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          personal_token: ${{ secrets.ACCESS_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           # Build output to publish to the `gh-pages` branch:
           publish_dir: ./output
           # The following lines assign commit authorship to the official
@@ -50,3 +58,4 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           publish_branch: gh-pages
+          enable_jekyll: true
