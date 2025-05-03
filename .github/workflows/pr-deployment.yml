@@ -23,7 +23,7 @@ jobs:
           else
             echo "DEPLOYMENT_ID=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           fi
-          echo "DEPLOYMENT_ID=$DEPLOYMENT_ID"
+          echo "DEPLOYMENT_ID=${{ env.DEPLOYMENT_ID }}"
 
       - uses: actions/checkout@v3
         with:
@@ -68,9 +68,16 @@ jobs:
           # The GH actions bot is used by default if you didn't specify the two fields.
           # You can swap them out with your own user credentials.
           publish_branch: gh-pages
+          enable_jekyll: true
 
       - name: Add Comment to PR
+        if: ${{ env.DEPLOYMENT_ID != 'manual-trigger' }}
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
             Published at https://${{ github.repository_owner }}.github.io/operating-systems/${{ env.DEPLOYMENT_ID }}/
+
+      - name: Output Deployment URL
+        if: ${{ env.DEPLOYMENT_ID == 'manual-trigger' }}
+        run: |
+          echo "The deployment is available at https://${{ github.repository_owner }}.github.io/operating-systems/${{ env.DEPLOYMENT_ID }}/"
