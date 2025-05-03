@@ -1,4 +1,5 @@
 ---
+title: Cooler Operating Systems
 nav_order: 1
 ---
 
