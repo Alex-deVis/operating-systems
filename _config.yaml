@@ -3,7 +3,7 @@
 title: Operating Systems
 remote_theme: just-the-docs/just-the-docs
 repository: cs-pub-ro/operating-systems
-baseurl: ""
+baseurl: "/operating-systems"
 
 exclude:
   - README.md
